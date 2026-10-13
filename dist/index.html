@@ -4,10 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f2eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="description" content="Signal is a calmer way to sort strong-fit and stretch roles across product, design, and experience architecture.">
   <meta property="og:title" content="Signal — Job Radar">
   <meta property="og:description" content="A focused job radar for design-led product, PM, and experience architecture roles.">
   <title>Signal — Job Radar</title>
+  <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
@@ -47,6 +50,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 24px 0 18px; border-bottom: 1px solid var(--line);
+      position: sticky; top: 0; z-index: 5; background: rgba(245,242,235,.94); backdrop-filter: blur(12px);
     }
     .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .brand-mark {
@@ -119,12 +123,16 @@
 
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 23px; }
     .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+    .stat-button { width: 100%; text-align: left; color: var(--ink); transition: transform .15s ease, box-shadow .15s ease, outline .15s ease; }
+    .stat-button:hover { transform: translateY(-2px); box-shadow: 0 7px 16px rgba(32,35,33,.08); }
+    .stat-button.active { outline: 2px solid var(--ink); outline-offset: 2px; }
     .stat strong { display: block; font: 500 28px/.95 var(--serif); letter-spacing: -.05em; }
     .stat span { display: block; color: var(--muted); font-size: 10px; margin-top: 6px; }
     .stat:first-child { background: var(--yellow); border-color: var(--yellow); }
     .stat:nth-child(2) { background: var(--blue-soft); border-color: #cbd8f7; }
     .stat:nth-child(3) { background: #edf3eb; border-color: #d4e4d4; }
     .stat:nth-child(4) { background: #fbe9e2; border-color: #f1cbbb; }
+    .fit-hint { color: var(--muted); font: 10px var(--mono); margin: -10px 0 16px; }
 
     .job-list { display: grid; gap: 10px; }
     .job-card { background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 19px 20px; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
@@ -169,6 +177,13 @@
     .refresh-spin { display: inline-block; }
     .refreshing .refresh-spin { animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Keep the public version useful as a compact widget as well as a shareable page. */
+    .hero, .how-section, footer { display: none; }
+    .radar-section { padding-top: 36px; }
+    .section-heading h2 { font-size: 35px; }
+    .section-heading p { max-width: 290px; }
+    .status-strip { margin-top: 8px; }
 
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; gap: 36px; padding: 62px 0 60px; }
@@ -245,7 +260,7 @@
         <div class="section-heading">
           <div>
             <div class="eyebrow">01 / Your radar</div>
-            <h2 id="radar-title">Roles with a point of view.</h2>
+            <h2 id="radar-title">Job radar</h2>
           </div>
           <p>Use the fit labels as a prioritization tool—not a verdict. The right stretch role is still worth the reach.</p>
         </div>
@@ -282,12 +297,13 @@
               <button class="text-button" id="refreshButton"><span class="refresh-spin" aria-hidden="true">↻</span> Review snapshot</button>
             </div>
 
-            <div class="stats" aria-label="Radar totals">
-              <div class="stat"><strong id="statTotal">8</strong><span>roles in view</span></div>
-              <div class="stat"><strong id="statStrong">4</strong><span>strong signals</span></div>
-              <div class="stat"><strong id="statReach">2</strong><span>worth a reach</span></div>
-              <div class="stat"><strong id="statStretch">2</strong><span>stretch signals</span></div>
+            <div class="stats" aria-label="Radar totals and fit filters">
+              <button class="stat stat-button active" data-fit-filter="all" aria-pressed="true"><strong id="statTotal">8</strong><span>roles in view</span></button>
+              <button class="stat stat-button" data-fit-filter="strong" aria-pressed="false"><strong id="statStrong">4</strong><span>strong signals</span></button>
+              <button class="stat stat-button" data-fit-filter="reach" aria-pressed="false"><strong id="statReach">2</strong><span>worth a reach</span></button>
+              <button class="stat stat-button" data-fit-filter="stretch" aria-pressed="false"><strong id="statStretch">2</strong><span>stretch signals</span></button>
             </div>
+            <div class="fit-hint" id="fitHint">Tap a signal card to filter the roles below.</div>
 
             <div class="job-list" id="jobList" aria-live="polite"></div>
           </div>
@@ -330,7 +346,7 @@
       { id: 'servicenow-cloud-platform', company: 'ServiceNow', title: 'Principal Product Manager, Cloud Platform', city: 'Kirkland, WA', mode: 'Hybrid', category: 'pm', level: 'Principal', fit: 'stretch', fitLabel: 'Stretch signal', salary: '$166.5k–$291.4k', posted: 'Oct 9', why: 'Platform strategy and cross-functional leadership with a heavier cloud and infrastructure expectation.', url: 'https://www.dreamworkhq.com/job/6618805f-ebfe-4efe-9c78-c48046f6b121' }
     ];
 
-    const state = { market: 'all', category: 'all', query: '', saved: new Set(), hidden: new Set() };
+    const state = { market: 'all', category: 'all', fit: 'all', query: '', saved: new Set(), hidden: new Set() };
     const jobList = document.getElementById('jobList');
     const toast = document.getElementById('toast');
 
@@ -341,7 +357,7 @@
       showToast.timeout = window.setTimeout(() => toast.classList.remove('show'), 2600);
     }
 
-    function visibleRoles() {
+    function baseRoles() {
       return roles.filter(role => {
         if (state.hidden.has(role.id)) return false;
         if (state.category !== 'all' && role.category !== state.category) return false;
@@ -353,6 +369,10 @@
         }
         return true;
       });
+    }
+
+    function visibleRoles() {
+      return baseRoles().filter(role => state.fit === 'all' || (state.fit === 'strong' ? ['strong', 'good'].includes(role.fit) : role.fit === state.fit));
     }
 
     function render() {
@@ -377,18 +397,33 @@
           </div>
         </article>`).join('') : '<div class="empty">No roles match this view yet. Try widening the market or clearing the search.</div>';
 
-      const counts = visible.reduce((acc, role) => { acc[role.fit] += 1; return acc; }, { strong: 0, good: 0, reach: 0, stretch: 0 });
+      const base = baseRoles();
+      const counts = base.reduce((acc, role) => { acc[role.fit] += 1; return acc; }, { strong: 0, good: 0, reach: 0, stretch: 0 });
       document.getElementById('statTotal').textContent = visible.length;
       document.getElementById('statStrong').textContent = counts.strong + counts.good;
       document.getElementById('statReach').textContent = counts.reach;
       document.getElementById('statStretch').textContent = counts.stretch;
       document.getElementById('orbitStrong').textContent = counts.strong + counts.good;
+      document.querySelectorAll('[data-fit-filter]').forEach(button => {
+        const active = button.dataset.fitFilter === state.fit;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      document.getElementById('fitHint').textContent = state.fit === 'all' ? 'Tap a signal card to filter the roles below.' : `Showing ${state.fit === 'strong' ? 'strong signals' : state.fit === 'reach' ? 'roles worth a reach' : 'stretch signals'} · tap the card again to clear.`;
     }
 
     document.querySelectorAll('[data-filter-group]').forEach(button => {
       button.addEventListener('click', () => {
         state[button.dataset.filterGroup] = button.dataset.filterValue;
         document.querySelectorAll(`[data-filter-group="${button.dataset.filterGroup}"]`).forEach(item => item.classList.toggle('active', item === button));
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-fit-filter]').forEach(button => {
+      button.addEventListener('click', () => {
+        const next = button.dataset.fitFilter;
+        state.fit = next === state.fit && next !== 'all' ? 'all' : next;
         render();
       });
     });
