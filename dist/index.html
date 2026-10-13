@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2eb">
+  <meta name="description" content="Signal is a calmer way to sort strong-fit and stretch roles across product, design, and experience architecture.">
+  <meta property="og:title" content="Signal — Job Radar">
+  <meta property="og:description" content="A focused job radar for design-led product, PM, and experience architecture roles.">
+  <title>Signal — Job Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #202321;
+      --muted: #6f766f;
+      --paper: #f5f2eb;
+      --card: #fffdf8;
+      --line: #d9d6cc;
+      --blue: #1857d5;
+      --blue-soft: #e8eefc;
+      --orange: #f06b3d;
+      --yellow: #f3c84b;
+      --green: #477d5f;
+      --lavender: #dcd9ff;
+      --shadow: 0 18px 50px rgba(32, 35, 33, .08);
+      --sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --serif: Fraunces, Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell { max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 0 18px; border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand-mark {
+      width: 28px; height: 28px; border: 2px solid var(--ink); border-radius: 50%;
+      display: grid; place-items: center; position: relative;
+    }
+    .brand-mark::after { content: ""; width: 8px; height: 8px; background: var(--orange); border-radius: 50%; }
+    .brand-word { font-weight: 700; letter-spacing: -.04em; font-size: 18px; }
+    .brand-code { color: var(--muted); font: 11px var(--mono); letter-spacing: .08em; margin-left: 2px; }
+    .nav { display: flex; align-items: center; gap: 24px; }
+    .nav a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .nav a:hover { color: var(--ink); }
+    .nav .nav-share { color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 3px; }
+
+    .hero { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(300px, .82fr); gap: 70px; padding: 88px 0 76px; align-items: center; }
+    .eyebrow { color: var(--blue); font: 500 11px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+    h1 { font: 600 clamp(48px, 7vw, 92px)/.94 var(--serif); letter-spacing: -.06em; margin: 18px 0 24px; max-width: 760px; }
+    .hero-copy { max-width: 620px; color: #505650; font-size: 18px; line-height: 1.55; }
+    .hero-actions { display: flex; align-items: center; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
+    .button {
+      border: 1px solid var(--ink); border-radius: 999px; padding: 12px 17px;
+      background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(32,35,33,.14); }
+    .button.secondary { background: transparent; color: var(--ink); }
+    .button.secondary:hover { background: #fffdf8; }
+    .hero-note { color: var(--muted); font: 11px var(--mono); margin-top: 17px; }
+
+    .orbit-card { min-height: 330px; position: relative; overflow: hidden; background: var(--blue); color: white; border-radius: 22px; padding: 26px; box-shadow: var(--shadow); }
+    .orbit-card::before, .orbit-card::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.28); border-radius: 50%; }
+    .orbit-card::before { width: 300px; height: 300px; right: -72px; top: 20px; }
+    .orbit-card::after { width: 190px; height: 190px; right: -17px; top: 74px; }
+    .orbit-dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--yellow); right: 110px; top: 59px; box-shadow: 0 0 0 8px rgba(243,200,75,.16); }
+    .orbit-dot.two { width: 9px; height: 9px; background: var(--orange); right: 66px; top: 220px; box-shadow: none; }
+    .orbit-title { position: relative; z-index: 1; font: 500 23px/1.1 var(--serif); max-width: 190px; }
+    .orbit-meta { position: absolute; z-index: 1; left: 26px; bottom: 27px; font: 11px/1.7 var(--mono); color: rgba(255,255,255,.75); }
+    .orbit-score { position: absolute; z-index: 1; right: 28px; bottom: 27px; text-align: right; }
+    .orbit-score strong { display: block; font: 600 54px/.9 var(--serif); letter-spacing: -.07em; }
+    .orbit-score span { font: 10px var(--mono); color: rgba(255,255,255,.75); }
+
+    .status-strip { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 15px 0; color: var(--muted); font-size: 12px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(71,125,95,.12); }
+    .status-strip span:last-child { margin-left: auto; font: 11px var(--mono); }
+
+    .radar-section { padding: 76px 0 90px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 25px; margin-bottom: 27px; }
+    .section-heading h2 { font: 500 42px/1 var(--serif); letter-spacing: -.05em; margin: 9px 0 0; }
+    .section-heading p { color: var(--muted); font-size: 13px; line-height: 1.5; max-width: 320px; margin: 0; }
+    .radar-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; align-items: start; }
+
+    .profile-card { background: var(--ink); color: #fff; border-radius: 18px; padding: 22px; position: sticky; top: 20px; }
+    .profile-card .label { color: #aeb4ae; font: 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .profile-card h3 { margin: 14px 0 22px; font: 500 25px/1.05 var(--serif); letter-spacing: -.04em; }
+    .profile-row { border-top: 1px solid rgba(255,255,255,.16); padding: 14px 0 3px; }
+    .profile-row span { display: block; color: #aeb4ae; font-size: 11px; margin-bottom: 5px; }
+    .profile-row strong { font-size: 13px; font-weight: 500; }
+    .profile-row em { font-style: normal; color: var(--yellow); }
+    .profile-foot { color: #aeb4ae; border-top: 1px solid rgba(255,255,255,.16); margin-top: 16px; padding-top: 15px; font-size: 11px; line-height: 1.5; }
+
+    .workspace { min-width: 0; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .segmented { display: flex; gap: 4px; flex-wrap: wrap; }
+    .segmented button { border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 999px; padding: 8px 12px; font-size: 12px; }
+    .segmented button:hover { color: var(--ink); }
+    .segmented button.active { background: var(--card); border-color: var(--line); color: var(--ink); box-shadow: 0 3px 10px rgba(32,35,33,.05); }
+    .search-box { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--ink); padding: 7px 0; min-width: 180px; }
+    .search-box svg { width: 15px; height: 15px; }
+    .search-box input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 12px; color: var(--ink); }
+    .search-box input::placeholder { color: #939991; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 23px; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+    .stat strong { display: block; font: 500 28px/.95 var(--serif); letter-spacing: -.05em; }
+    .stat span { display: block; color: var(--muted); font-size: 10px; margin-top: 6px; }
+    .stat:first-child { background: var(--yellow); border-color: var(--yellow); }
+    .stat:nth-child(2) { background: var(--blue-soft); border-color: #cbd8f7; }
+    .stat:nth-child(3) { background: #edf3eb; border-color: #d4e4d4; }
+    .stat:nth-child(4) { background: #fbe9e2; border-color: #f1cbbb; }
+
+    .job-list { display: grid; gap: 10px; }
+    .job-card { background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 19px 20px; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .job-card:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(32,35,33,.07); border-color: #bcbfb7; }
+    .job-top { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+    .job-company { color: var(--muted); font: 11px var(--mono); letter-spacing: .02em; }
+    .job-card h3 { font-size: 17px; line-height: 1.25; margin: 6px 0 8px; letter-spacing: -.02em; }
+    .job-meta { display: flex; flex-wrap: wrap; gap: 7px 14px; color: var(--muted); font-size: 11px; }
+    .job-meta span { display: inline-flex; align-items: center; gap: 5px; }
+    .job-meta span::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: #afb5ae; }
+    .job-meta span:first-child::before { background: var(--blue); }
+    .fit { border-radius: 999px; padding: 6px 9px; font: 10px var(--mono); white-space: nowrap; }
+    .fit.strong { color: #2e6748; background: #e4f0e3; }
+    .fit.good { color: #31569b; background: #e6edfc; }
+    .fit.reach { color: #8a5a18; background: #fff0c8; }
+    .fit.stretch { color: #984a2d; background: #fbe3da; }
+    .job-bottom { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-top: 18px; }
+    .job-why { color: #5f675f; font-size: 12px; line-height: 1.45; max-width: 570px; }
+    .job-why strong { color: var(--ink); font-weight: 600; }
+    .job-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .text-button { border: 0; background: transparent; color: var(--muted); font-size: 11px; padding: 4px 0; }
+    .text-button:hover { color: var(--ink); }
+    .text-button.saved { color: var(--blue); }
+    .view-link { display: inline-flex; align-items: center; gap: 5px; background: var(--ink); color: white; border-radius: 999px; text-decoration: none; padding: 8px 11px; font-size: 11px; }
+    .view-link:hover { background: var(--blue); }
+    .empty { padding: 50px 20px; border: 1px dashed var(--line); border-radius: 15px; color: var(--muted); text-align: center; font-size: 13px; }
+
+    .how-section { border-top: 1px solid var(--line); padding: 78px 0 90px; }
+    .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start; }
+    .how-grid h2 { font: 500 43px/1 var(--serif); letter-spacing: -.055em; margin: 10px 0 18px; max-width: 450px; }
+    .how-grid > div > p { color: var(--muted); line-height: 1.6; max-width: 430px; font-size: 15px; }
+    .steps { border-top: 1px solid var(--line); }
+    .step { display: grid; grid-template-columns: 38px 1fr; gap: 12px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .step-num { color: var(--blue); font: 11px var(--mono); }
+    .step strong { font-size: 13px; }
+    .step p { color: var(--muted); font-size: 12px; line-height: 1.5; margin: 5px 0 0; }
+
+    footer { border-top: 1px solid var(--line); padding: 22px 0 35px; color: var(--muted); display: flex; justify-content: space-between; gap: 20px; font-size: 11px; }
+    footer span:last-child { font-family: var(--mono); }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--ink); color: #fff; border-radius: 999px; padding: 11px 16px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 20; box-shadow: var(--shadow); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .refresh-spin { display: inline-block; }
+    .refreshing .refresh-spin { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 36px; padding: 62px 0 60px; }
+      .orbit-card { min-height: 260px; }
+      .radar-layout { grid-template-columns: 1fr; }
+      .profile-card { position: static; }
+      .profile-card h3 { max-width: 300px; }
+      .profile-row { display: inline-block; width: 48%; vertical-align: top; border-top: 0; padding-top: 0; }
+      .profile-foot { margin-top: 12px; }
+      .how-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+    @media (max-width: 560px) {
+      .shell { padding: 0 18px; }
+      .topbar { padding-top: 18px; }
+      .nav a:not(.nav-share) { display: none; }
+      h1 { font-size: 53px; }
+      .hero-copy { font-size: 16px; }
+      .section-heading { display: block; }
+      .section-heading p { margin-top: 15px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .job-top, .job-bottom { display: block; }
+      .fit { display: inline-block; margin-top: 12px; }
+      .job-actions { margin-top: 15px; justify-content: space-between; }
+      .search-box { width: 100%; }
+      footer { display: block; }
+      footer span { display: block; margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Signal home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-word">signal</span>
+        <span class="brand-code">/ JOB RADAR</span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#radar">The radar</a>
+        <a href="#how-it-works">How it works</a>
+        <a class="nav-share" href="#" id="navShare">Share this</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <div class="eyebrow">A calmer way to search</div>
+          <h1 id="hero-title">Reach higher. Apply sharper.</h1>
+          <p class="hero-copy">Signal sorts a job search into the roles that make sense now, the roles worth reaching for, and the roles that need a little more evidence.</p>
+          <div class="hero-actions">
+            <a class="button" href="#radar">Open the radar <span aria-hidden="true">↘</span></a>
+            <button class="button secondary" id="heroShare">Share this radar</button>
+            <button class="button secondary" id="linkedinShare">Share on LinkedIn ↗</button>
+          </div>
+          <div class="hero-note">Built for design-led product, PM, and experience architecture searches.</div>
+        </div>
+        <div class="orbit-card" aria-label="Radar summary">
+          <div class="orbit-title">A signal is more useful than a pile of tabs.</div>
+          <div class="orbit-dot" aria-hidden="true"></div>
+          <div class="orbit-dot two" aria-hidden="true"></div>
+          <div class="orbit-meta">SEATTLE + REMOTE<br>DESIGN / PRODUCT / ARCHITECTURE</div>
+          <div class="orbit-score"><strong id="orbitStrong">4</strong><span>STRONG SIGNALS</span></div>
+        </div>
+      </section>
+
+      <div class="status-strip">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="snapshotStatus">Curated snapshot ready to explore</span>
+        <span>Last reviewed · Oct 13, 2026</span>
+      </div>
+
+      <section class="radar-section" id="radar" aria-labelledby="radar-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">01 / Your radar</div>
+            <h2 id="radar-title">Roles with a point of view.</h2>
+          </div>
+          <p>Use the fit labels as a prioritization tool—not a verdict. The right stretch role is still worth the reach.</p>
+        </div>
+
+        <div class="radar-layout">
+          <aside class="profile-card" aria-label="Search profile">
+            <div class="label">Profile signal</div>
+            <h3>Design-led product builder</h3>
+            <div class="profile-row"><span>Primary lane</span><strong>Senior PM</strong></div>
+            <div class="profile-row"><span>Design lane</span><strong>Senior → <em>Principal</em></strong></div>
+            <div class="profile-row"><span>Architecture</span><strong>Product / UX</strong></div>
+            <div class="profile-row"><span>Market</span><strong>Seattle + remote</strong></div>
+            <div class="profile-foot">Calibrated for strong near-term matches with a deliberate reach lane.</div>
+          </aside>
+
+          <div class="workspace">
+            <div class="toolbar">
+              <div class="segmented" role="group" aria-label="Market filter">
+                <button class="active" data-filter-group="market" data-filter-value="all">All roles</button>
+                <button data-filter-group="market" data-filter-value="seattle">Seattle hybrid</button>
+                <button data-filter-group="market" data-filter-value="remote">Remote US</button>
+              </div>
+              <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+                <input id="searchInput" type="search" placeholder="Search roles or companies" aria-label="Search roles or companies">
+              </div>
+            </div>
+            <div class="toolbar" style="margin-top:-5px;">
+              <div class="segmented" role="group" aria-label="Role type filter">
+                <button class="active" data-filter-group="category" data-filter-value="all">Everything</button>
+                <button data-filter-group="category" data-filter-value="design">Design</button>
+                <button data-filter-group="category" data-filter-value="pm">Product</button>
+              </div>
+              <button class="text-button" id="refreshButton"><span class="refresh-spin" aria-hidden="true">↻</span> Review snapshot</button>
+            </div>
+
+            <div class="stats" aria-label="Radar totals">
+              <div class="stat"><strong id="statTotal">8</strong><span>roles in view</span></div>
+              <div class="stat"><strong id="statStrong">4</strong><span>strong signals</span></div>
+              <div class="stat"><strong id="statReach">2</strong><span>worth a reach</span></div>
+              <div class="stat"><strong id="statStretch">2</strong><span>stretch signals</span></div>
+            </div>
+
+            <div class="job-list" id="jobList" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-section" id="how-it-works" aria-labelledby="how-title">
+        <div class="how-grid">
+          <div>
+            <div class="eyebrow">02 / The method</div>
+            <h2 id="how-title">Ambition works better with a map.</h2>
+            <p>Signal keeps a search honest without making it small. The fit model starts with what you can credibly do now, then creates room for the roles that ask you to grow.</p>
+            <div class="hero-actions"><button class="button" id="methodShare">Share the method <span aria-hidden="true">↗</span></button></div>
+          </div>
+          <div class="steps">
+            <div class="step"><div class="step-num">01</div><div><strong>Find the through-line</strong><p>Group roles by the work underneath the title: designing complex systems, shaping AI experiences, or owning product direction.</p></div></div>
+            <div class="step"><div class="step-num">02</div><div><strong>Separate now from next</strong><p>Strong-fit roles deserve the bulk of your time. Reach roles get a thoughtful application—not your whole week.</p></div></div>
+            <div class="step"><div class="step-num">03</div><div><strong>Make every tab actionable</strong><p>Save the role, open the source listing, or hide it. A search should end in a decision, not another browser window.</p></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Signal is a focused search layer for ambitious generalists.</span>
+      <span>PUBLIC PREVIEW · DREAMWORK SNAPSHOT</span>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const roles = [
+      { id: 'amazon-ux-ai', company: 'Amazon', title: 'UX Designer, AI/ML', city: 'Seattle, WA', mode: 'Hybrid', category: 'design', level: 'Senior', fit: 'strong', fitLabel: 'Strong fit', salary: '$117.8k–$160k', posted: 'Today', why: 'Customer-centered AI/ML product design with ambiguity, research, flows, wireframes, and prototypes.', url: 'https://www.dreamworkhq.com/job/c6ed7338-68f3-41f0-bc7d-8018bede084f' },
+      { id: 'remitly-conversational', company: 'Remitly', title: 'Senior Product Designer, Conversational AI Platform', city: 'Seattle, WA', mode: 'Hybrid', category: 'design', level: 'Senior', fit: 'strong', fitLabel: 'Strong fit', salary: '$144k–$180k', posted: 'Snapshot', why: 'Agentic AI, messaging, voice, and chat—an end-to-end product design lane with a clear design-to-product bridge.', url: 'https://www.dreamworkhq.com/job/d8bf046c-7117-47d3-8d37-ac3da75119b3' },
+      { id: 'okta-ai-agents', company: 'Okta', title: 'Senior Product Designer — Okta for AI Agents', city: 'Bellevue, WA', mode: 'Hybrid', category: 'design', level: 'Senior', fit: 'strong', fitLabel: 'Strong fit', salary: '$136k–$187k', posted: 'Oct 2', why: 'Design agent lifecycle, permission scoping, human-in-the-loop authorization, and policy enforcement.', url: 'https://www.dreamworkhq.com/job/b4105d91-dc41-4ed4-98e1-595e26d0059c' },
+      { id: 'okta-governance', company: 'Okta', title: 'Staff Product Designer — Identity Governance', city: 'Bellevue, WA', mode: 'Hybrid', category: 'design', level: 'Staff', fit: 'good', fitLabel: 'Strong design fit', salary: '$156k–$215k', posted: 'Oct 1', why: 'Long-term design strategy, patterns and standards, portfolio-level influence, mentoring, and executive partnership.', url: 'https://www.dreamworkhq.com/job/4868abaf-696e-4f18-9a21-f19299bed94d' },
+      { id: 'zillow-design-systems', company: 'Zillow', title: 'Principal Product Manager, Design Systems & Accessibility', city: 'United States', mode: 'Remote', category: 'pm', level: 'Principal', fit: 'reach', fitLabel: 'Worth a reach', salary: '$182.1k–$290.9k', posted: 'Oct 9', why: 'A first dedicated PM for design systems and accessibility—strong overlap with design strategy, adoption, and internal customer discovery.', url: 'https://www.dreamworkhq.com/job/0eae3ab7-0c6f-4253-9a98-af2a4b64aa16' },
+      { id: 'digitalocean-compute', company: 'DigitalOcean', title: 'Staff Product Manager, Compute Platform', city: 'Seattle, WA', mode: 'Hybrid', category: 'pm', level: 'Staff', fit: 'reach', fitLabel: 'Worth a reach', salary: '$186.4k–$279.6k', posted: 'Oct 9', why: 'Platform strategy and roadmap ownership with a technical stretch into developer infrastructure and platform economics.', url: 'https://www.dreamworkhq.com/job/f3cdef4b-8b96-437e-af54-cdb8d877cf43' },
+      { id: 'cisco-knowledge-graph', company: 'Cisco', title: 'Senior Staff Product Manager, AI Knowledge Graph & Intelligence', city: 'Seattle, WA', mode: 'Remote', category: 'pm', level: 'Staff', fit: 'stretch', fitLabel: 'Stretch signal', salary: 'Not listed', posted: 'Today', why: 'Knowledge graphs, semantic search, RAG, and agentic workflows make this a high-upside technical PM reach.', url: 'https://www.dreamworkhq.com/job/72572764-ca82-4041-9f59-be3a4033abf3' },
+      { id: 'servicenow-cloud-platform', company: 'ServiceNow', title: 'Principal Product Manager, Cloud Platform', city: 'Kirkland, WA', mode: 'Hybrid', category: 'pm', level: 'Principal', fit: 'stretch', fitLabel: 'Stretch signal', salary: '$166.5k–$291.4k', posted: 'Oct 9', why: 'Platform strategy and cross-functional leadership with a heavier cloud and infrastructure expectation.', url: 'https://www.dreamworkhq.com/job/6618805f-ebfe-4efe-9c78-c48046f6b121' }
+    ];
+
+    const state = { market: 'all', category: 'all', query: '', saved: new Set(), hidden: new Set() };
+    const jobList = document.getElementById('jobList');
+    const toast = document.getElementById('toast');
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(showToast.timeout);
+      showToast.timeout = window.setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function visibleRoles() {
+      return roles.filter(role => {
+        if (state.hidden.has(role.id)) return false;
+        if (state.category !== 'all' && role.category !== state.category) return false;
+        if (state.market === 'seattle' && role.mode !== 'Hybrid') return false;
+        if (state.market === 'remote' && role.mode !== 'Remote') return false;
+        if (state.query) {
+          const haystack = `${role.company} ${role.title} ${role.city} ${role.why}`.toLowerCase();
+          if (!haystack.includes(state.query.toLowerCase())) return false;
+        }
+        return true;
+      });
+    }
+
+    function render() {
+      const visible = visibleRoles();
+      jobList.innerHTML = visible.length ? visible.map(role => `
+        <article class="job-card">
+          <div class="job-top">
+            <div>
+              <div class="job-company">${role.company} · ${role.level}</div>
+              <h3>${role.title}</h3>
+              <div class="job-meta"><span>${role.city}</span><span>${role.mode}</span><span>${role.salary}</span><span>${role.posted}</span></div>
+            </div>
+            <span class="fit ${role.fit}">${role.fitLabel}</span>
+          </div>
+          <div class="job-bottom">
+            <div class="job-why"><strong>Why it surfaced:</strong> ${role.why}</div>
+            <div class="job-actions">
+              <button class="text-button ${state.saved.has(role.id) ? 'saved' : ''}" data-save="${role.id}">${state.saved.has(role.id) ? 'Saved' : 'Save'}</button>
+              <button class="text-button" data-hide="${role.id}">Hide</button>
+              <a class="view-link" href="${role.url}" target="_blank" rel="noopener">View role ↗</a>
+            </div>
+          </div>
+        </article>`).join('') : '<div class="empty">No roles match this view yet. Try widening the market or clearing the search.</div>';
+
+      const counts = visible.reduce((acc, role) => { acc[role.fit] += 1; return acc; }, { strong: 0, good: 0, reach: 0, stretch: 0 });
+      document.getElementById('statTotal').textContent = visible.length;
+      document.getElementById('statStrong').textContent = counts.strong + counts.good;
+      document.getElementById('statReach').textContent = counts.reach;
+      document.getElementById('statStretch').textContent = counts.stretch;
+      document.getElementById('orbitStrong').textContent = counts.strong + counts.good;
+    }
+
+    document.querySelectorAll('[data-filter-group]').forEach(button => {
+      button.addEventListener('click', () => {
+        state[button.dataset.filterGroup] = button.dataset.filterValue;
+        document.querySelectorAll(`[data-filter-group="${button.dataset.filterGroup}"]`).forEach(item => item.classList.toggle('active', item === button));
+        render();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', event => { state.query = event.target.value.trim(); render(); });
+    jobList.addEventListener('click', event => {
+      const save = event.target.closest('[data-save]');
+      const hide = event.target.closest('[data-hide]');
+      if (save) { state.saved.has(save.dataset.save) ? state.saved.delete(save.dataset.save) : state.saved.add(save.dataset.save); render(); showToast(state.saved.has(save.dataset.save) ? 'Role saved to your radar.' : 'Role removed from saved.'); }
+      if (hide) { state.hidden.add(hide.dataset.hide); render(); showToast('Role hidden. You can widen the search to find more.'); }
+    });
+
+    document.getElementById('refreshButton').addEventListener('click', event => {
+      const button = event.currentTarget;
+      button.classList.add('refreshing');
+      window.setTimeout(() => { button.classList.remove('refreshing'); document.getElementById('snapshotStatus').textContent = 'Snapshot reviewed just now · no live feed connected'; showToast('Snapshot reviewed. Live Dreamwork sync can be connected later.'); }, 650);
+    });
+
+    function shareRadar() {
+      const url = new URL(window.location.href);
+      if (state.market !== 'all') url.searchParams.set('market', state.market); else url.searchParams.delete('market');
+      if (state.category !== 'all') url.searchParams.set('category', state.category); else url.searchParams.delete('category');
+      if (state.query) url.searchParams.set('q', state.query); else url.searchParams.delete('q');
+      const shareUrl = url.toString();
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(shareUrl).then(() => showToast('Share link copied — paste it into LinkedIn.'));
+      else showToast('Copy this page URL to share your radar.');
+    }
+
+    ['navShare', 'heroShare', 'methodShare'].forEach(id => document.getElementById(id).addEventListener('click', event => { event.preventDefault(); shareRadar(); }));
+    document.getElementById('linkedinShare').addEventListener('click', () => {
+      const url = encodeURIComponent(window.location.href);
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'noopener,noreferrer');
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    if (['all', 'seattle', 'remote'].includes(params.get('market'))) { state.market = params.get('market'); document.querySelector(`[data-filter-group="market"][data-filter-value="${state.market}"]`).click(); }
+    if (['all', 'design', 'pm'].includes(params.get('category'))) { state.category = params.get('category'); document.querySelector(`[data-filter-group="category"][data-filter-value="${state.category}"]`).click(); }
+    if (params.get('q')) { state.query = params.get('q'); document.getElementById('searchInput').value = state.query; }
+    render();
+  </script>
+</body>
+</html>
