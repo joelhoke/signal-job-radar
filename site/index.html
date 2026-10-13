@@ -329,22 +329,13 @@
 
     <footer>
       <span>Signal is a focused search layer for ambitious generalists.</span>
-      <span>PUBLIC PREVIEW · DREAMWORK SNAPSHOT</span>
+      <span>PUBLIC PREVIEW · DAILY ROLE RADAR</span>
     </footer>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const roles = [
-      { id: 'amazon-ux-ai', company: 'Amazon', title: 'UX Designer, AI/ML', city: 'Seattle, WA', mode: 'Hybrid', category: 'design', level: 'Senior', fit: 'strong', fitLabel: 'Strong fit', salary: '$117.8k–$160k', posted: 'Today', why: 'Customer-centered AI/ML product design with ambiguity, research, flows, wireframes, and prototypes.', url: 'https://www.amazon.jobs/en/jobs/10577202/ux-designer-ai-ml' },
-      { id: 'remitly-conversational', company: 'Remitly', title: 'Senior Product Designer, Conversational AI Platform', city: 'Seattle, WA', mode: 'Hybrid', category: 'design', level: 'Senior', fit: 'strong', fitLabel: 'Strong fit', salary: '$144k–$180k', posted: 'Snapshot', why: 'Agentic AI, messaging, voice, and chat—an end-to-end product design lane with a clear design-to-product bridge.', url: 'https://remitly.wd5.myworkdayjobs.com/Remitly_Careers/job/Seattle-Washington-United-States/Senior-Product-Designer_R_106913-1' },
-      { id: 'okta-ai-agents', company: 'Okta', title: 'Senior Product Designer — Okta for AI Agents', city: 'Bellevue, WA', mode: 'Hybrid', category: 'design', level: 'Senior', fit: 'strong', fitLabel: 'Strong fit', salary: '$136k–$187k', posted: 'Oct 2', why: 'Design agent lifecycle, permission scoping, human-in-the-loop authorization, and policy enforcement.', url: 'https://www.okta.com/company/careers/opportunity/8248278?gh_jid=8248278' },
-      { id: 'okta-governance', company: 'Okta', title: 'Staff Product Designer — Identity Governance', city: 'Bellevue, WA', mode: 'Hybrid', category: 'design', level: 'Staff', fit: 'good', fitLabel: 'Strong design fit', salary: '$156k–$215k', posted: 'Oct 1', why: 'Long-term design strategy, patterns and standards, portfolio-level influence, mentoring, and executive partnership.', url: 'https://www.okta.com/company/careers/opportunity/8247059?gh_jid=8247059' },
-      { id: 'zillow-design-systems', company: 'Zillow', title: 'Principal Product Manager, Design Systems & Accessibility', city: 'United States', mode: 'Remote', category: 'pm', level: 'Principal', fit: 'reach', fitLabel: 'Worth a reach', salary: '$182.1k–$290.9k', posted: 'Oct 9', why: 'A first dedicated PM for design systems and accessibility—strong overlap with design strategy, adoption, and internal customer discovery.', url: 'https://zillow.wd5.myworkdayjobs.com/Zillow_Group_External/job/Remote-USA/Principal-Product-Manager---Design-Systems---Accessibility_P751336-1' },
-      { id: 'digitalocean-compute', company: 'DigitalOcean', title: 'Staff Product Manager, Compute Platform', city: 'Seattle, WA', mode: 'Hybrid', category: 'pm', level: 'Staff', fit: 'reach', fitLabel: 'Worth a reach', salary: '$186.4k–$279.6k', posted: 'Oct 9', why: 'Platform strategy and roadmap ownership with a technical stretch into developer infrastructure and platform economics.', url: 'https://www.digitalocean.com/careers/position/apply/?gh_jid=8192977' },
-      { id: 'cisco-knowledge-graph', company: 'Cisco', title: 'Senior Staff Product Manager, AI Knowledge Graph & Intelligence', city: 'Seattle, WA', mode: 'Remote', category: 'pm', level: 'Staff', fit: 'stretch', fitLabel: 'Stretch signal', salary: 'Not listed', posted: 'Today', why: 'Knowledge graphs, semantic search, RAG, and agentic workflows make this a high-upside technical PM reach.', url: 'https://cisco.wd5.myworkdayjobs.com/Cisco_Careers/job/Seattle-Washington-US/Senior-Staff-Product-Manager--AI-Knowledge-Graph---Intelligence_2019172-1' },
-      { id: 'servicenow-cloud-platform', company: 'ServiceNow', title: 'Principal Product Manager, Cloud Platform', city: 'Kirkland, WA', mode: 'Hybrid', category: 'pm', level: 'Principal', fit: 'stretch', fitLabel: 'Stretch signal', salary: '$166.5k–$291.4k', posted: 'Oct 9', why: 'Platform strategy and cross-functional leadership with a heavier cloud and infrastructure expectation.', url: 'https://jobs.smartrecruiters.com/ServiceNow/744000154770367-principal-product-manager-servicenow-cloud-platform?oga=true' }
-    ];
+    const roles = __ROLE_DATA__;
 
     const state = { market: 'all', category: 'all', fit: 'all', query: '', saved: new Set(), hidden: new Set() };
     const jobList = document.getElementById('jobList');
@@ -439,7 +430,7 @@
     document.getElementById('refreshButton').addEventListener('click', event => {
       const button = event.currentTarget;
       button.classList.add('refreshing');
-      window.setTimeout(() => { button.classList.remove('refreshing'); document.getElementById('snapshotStatus').textContent = 'Snapshot reviewed just now · no live feed connected'; showToast('Snapshot reviewed. Live Dreamwork sync can be connected later.'); }, 650);
+      window.setTimeout(() => { window.location.reload(); }, 250);
     });
 
     function shareRadar() {

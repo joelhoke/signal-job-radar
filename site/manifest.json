@@ -1,0 +1,9 @@
+{
+  "name": "Signal — Job Radar",
+  "short_name": "Signal",
+  "description": "A compact job radar for design-led product and PM roles.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2eb",
+  "theme_color": "#f5f2eb"
+}
