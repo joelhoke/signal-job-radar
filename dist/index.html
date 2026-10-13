@@ -446,6 +446,7 @@
       const url = new URL(window.location.href);
       if (state.market !== 'all') url.searchParams.set('market', state.market); else url.searchParams.delete('market');
       if (state.category !== 'all') url.searchParams.set('category', state.category); else url.searchParams.delete('category');
+      if (state.fit !== 'all') url.searchParams.set('fit', state.fit); else url.searchParams.delete('fit');
       if (state.query) url.searchParams.set('q', state.query); else url.searchParams.delete('q');
       const shareUrl = url.toString();
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(shareUrl).then(() => showToast('Share link copied — paste it into LinkedIn.'));
@@ -461,6 +462,7 @@
     const params = new URLSearchParams(window.location.search);
     if (['all', 'seattle', 'remote'].includes(params.get('market'))) { state.market = params.get('market'); document.querySelector(`[data-filter-group="market"][data-filter-value="${state.market}"]`).click(); }
     if (['all', 'design', 'pm'].includes(params.get('category'))) { state.category = params.get('category'); document.querySelector(`[data-filter-group="category"][data-filter-value="${state.category}"]`).click(); }
+    if (['all', 'strong', 'reach', 'stretch'].includes(params.get('fit'))) { state.fit = params.get('fit'); document.querySelector(`[data-fit-filter="${state.fit}"]`).click(); }
     if (params.get('q')) { state.query = params.get('q'); document.getElementById('searchInput').value = state.query; }
     render();
   </script>
