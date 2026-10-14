@@ -1,0 +1,15 @@
+# macOS / Xcode output
+.DS_Store
+DerivedData/
+build/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# Local packaging and signing output
+*.app
+*.zip
+*.dmg
+
+# Local editor files
+.vscode/
+.idea/
