@@ -16,24 +16,6 @@ private enum RadarColors {
     static let red = Color(red: 0.84, green: 0.45, blue: 0.40)
 }
 
-struct RadarRole: Codable, Identifiable {
-    let id: String
-    let company: String
-    let title: String
-    let city: String
-    let mode: String
-    let category: String
-    let level: String
-    let fit: String
-    let fitLabel: String
-    let salary: String
-    let posted: String
-    let why: String
-    let url: String
-
-    var isStrong: Bool { fit == "strong" || fit == "good" }
-}
-
 private struct RadarFeed: Codable {
     let updated: String
     let roles: [RadarRole]
@@ -45,6 +27,35 @@ final class RadarStore: ObservableObject {
     @Published var updated = ""
     @Published var isLoading = false
     @Published var errorMessage: String?
+
+    @Published private(set) var history: RoleHistory?
+    @Published var historyError: String?
+
+    init() {
+        do {
+            let directory = try FileManager.default.url(for: .applicationSupportDirectory,
+                in: .userDomainMask, appropriateFor: nil, create: true)
+            history = try RoleHistory(fileURL: directory.appendingPathComponent("Signal/role-history.json"))
+        } catch {
+            historyError = "Saved status could not be loaded. Your history has not been overwritten. " + error.localizedDescription
+        }
+    }
+
+    func roles(for status: RoleStatus) -> [RadarRole] {
+        // Never show potentially applied jobs as new if saved history could not be read.
+        history?.roles(for: status, feed: roles) ?? []
+    }
+
+    func setStatus(_ status: RoleStatus, for role: RadarRole) {
+        guard var next = history else { return }
+        do {
+            try next.set(status, for: role)
+            history = next
+            historyError = nil
+        } catch {
+            historyError = "Status was not saved. Please try again. " + error.localizedDescription
+        }
+    }
 
     private var didLoad = false
 
@@ -131,10 +142,11 @@ struct ContentView: View {
     @ObservedObject var store: RadarStore
     @State private var filter: RadarFilter = .all
     @State private var searchText = ""
+    @State private var status: RoleStatus = .new
 
     private var filteredRoles: [RadarRole] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        return store.roles.filter { role in
+        return store.roles(for: status).filter { role in
             guard filter.includes(role) else { return false }
             guard !query.isEmpty else { return true }
             return [role.company, role.title, role.city, role.mode, role.level, role.fitLabel]
@@ -171,6 +183,20 @@ struct ContentView: View {
                 .buttonStyle(.bordered)
                 .tint(RadarColors.text)
             }
+
+            Picker("Listing status", selection: $status) {
+                ForEach(RoleStatus.allCases) { option in
+                    Text("\(option.title) (\(store.roles(for: option).count))").tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.top, 20)
+            .onChange(of: status) { _, _ in filter = .all }
+
+            Text("Status is saved on this Mac. Applied and dismissed roles stay out of New.")
+                .font(.system(size: 11))
+                .foregroundStyle(RadarColors.secondary)
+                .padding(.top, 8)
 
             HStack(spacing: 8) {
                 ForEach(RadarFilter.allCases) { option in
@@ -210,7 +236,20 @@ struct ContentView: View {
             }
             .padding(.vertical, 14)
 
-            if store.isLoading && store.roles.isEmpty {
+            if let historyError = store.historyError {
+                Text(historyError)
+                    .foregroundStyle(RadarColors.yellow)
+                    .font(.callout)
+                    .padding(.bottom, 12)
+            }
+            if let error = store.errorMessage, status != .new || !store.roles.isEmpty {
+                Text("Feed refresh failed: " + error)
+                    .font(.callout)
+                    .foregroundStyle(RadarColors.yellow)
+                    .padding(.bottom, 12)
+            }
+
+            if store.isLoading && store.roles.isEmpty && status == .new {
                 VStack {
                     Spacer()
                     ProgressView("Loading roles…")
@@ -218,7 +257,7 @@ struct ContentView: View {
                         .foregroundStyle(RadarColors.secondary)
                     Spacer()
                 }
-            } else if let errorMessage = store.errorMessage, store.roles.isEmpty {
+            } else if let errorMessage = store.errorMessage, store.roles.isEmpty, status == .new {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Couldn’t load the role feed")
                         .font(.headline)
@@ -229,11 +268,23 @@ struct ContentView: View {
                         .buttonStyle(.borderedProminent)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            } else if filteredRoles.isEmpty {
+                VStack(spacing: 10) {
+                    Text(status == .new ? "No new roles in this view" : "No \(status.title.lowercased()) roles in this view")
+                        .font(.headline)
+                    Text(status == .new ? "Try another fit filter or search. Saved listings are in Applied and Dismissed." : "Your saved listings will appear here, even after they leave the feed.")
+                        .font(.callout)
+                        .foregroundStyle(RadarColors.secondary)
+                }
+                .foregroundStyle(RadarColors.text)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 10) {
                         ForEach(filteredRoles) { role in
-                            RoleCard(role: role)
+                            RoleCard(role: role, saved: store.history?.record(for: role)) { next in
+                                store.setStatus(next, for: role)
+                            }
                         }
                     }
                 }
@@ -249,6 +300,7 @@ struct ContentView: View {
         }
         .onOpenURL { url in
             guard url.scheme == "signalwidget" else { return }
+            status = .new
             let requestedFilter = URLComponents(url: url, resolvingAgainstBaseURL: false)?
                 .queryItems?
                 .first(where: { $0.name == "fit" })?.value
@@ -261,7 +313,7 @@ struct ContentView: View {
     }
 
     private func count(for filter: RadarFilter) -> Int {
-        store.roles.filter(filter.includes).count
+        store.roles(for: status).filter(filter.includes).count
     }
 }
 
@@ -289,6 +341,8 @@ private struct FilterButton: View {
 
 private struct RoleCard: View {
     let role: RadarRole
+    let saved: SavedRole?
+    let setStatus: (RoleStatus) -> Void
 
     private var fitColor: Color {
         switch role.fit {
@@ -300,8 +354,7 @@ private struct RoleCard: View {
     }
 
     var body: some View {
-        Link(destination: URL(string: role.url)!) {
-            VStack(alignment: .leading, spacing: 11) {
+        VStack(alignment: .leading, spacing: 11) {
                 HStack(alignment: .top, spacing: 12) {
                     VStack(alignment: .leading, spacing: 5) {
                         HStack(spacing: 7) {
@@ -348,12 +401,37 @@ private struct RoleCard: View {
                         .lineLimit(2)
                 }
 
-                HStack {
-                    Spacer()
-                    Text("Open role ↗")
-                        .font(.system(size: 12, weight: .semibold, design: .rounded))
-                        .foregroundStyle(RadarColors.text)
+                if let saved {
+                    Label("\(saved.status.title) · \(saved.date.formatted(date: .abbreviated, time: .omitted))",
+                          systemImage: saved.status == .applied ? "checkmark.circle.fill" : "archivebox")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(saved.status == .applied ? RadarColors.green : RadarColors.secondary)
                 }
+
+                HStack(spacing: 10) {
+                    if saved?.status != .applied {
+                        Button { setStatus(.applied) } label: {
+                            Label("Mark applied", systemImage: "checkmark.circle")
+                        }
+                        .help("Record that you applied and move this role out of New")
+                    }
+                    if saved == nil {
+                        Button { setStatus(.dismissed) } label: {
+                            Label("Dismiss", systemImage: "archivebox")
+                        }
+                        .help("Clear this listing from New; restore it from Dismissed")
+                    } else {
+                        Button("Restore to New") { setStatus(.new) }
+                            .help("Clear the saved status. The role returns to New if it is still in the current feed.")
+                    }
+                    Spacer()
+                    if let url = URL(string: role.url), ["https", "http"].contains(url.scheme) {
+                        Link("Open role ↗", destination: url)
+                    }
+                }
+                .buttonStyle(.bordered)
+                .tint(RadarColors.text)
+                .font(.system(size: 12, weight: .semibold))
             }
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -362,7 +440,5 @@ private struct RoleCard: View {
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(RadarColors.tile, lineWidth: 1)
             }
-        }
-        .buttonStyle(.plain)
     }
 }
